@@ -2,13 +2,20 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 )
 
+const MAX = 112
+const SMAX = MAX * 2
 const (
 	EMPTY = iota
 	ROOT
 	NODE
 )
+
+var RAMDOMS [MAX]int
+var SEARCHS [SMAX]int
 
 type KEY int
 
@@ -84,18 +91,82 @@ func traverse(n *node) {
 	traverse(n.right)
 }
 
+func pre() {
+	rand.Seed(time.Now().UnixNano())
+
+	nums := make([]int, MAX)
+	nums = rand.Perm(MAX)
+	for i, n := range nums {
+		RAMDOMS[i] = n
+	}
+	fmt.Printf("RAMDOMS len is %d\n", len(RAMDOMS))
+
+	snums := make([]int, SMAX)
+	snums = rand.Perm(SMAX)
+	for i, n := range snums {
+		SEARCHS[i] = n
+	}
+	fmt.Printf("SEARCHS len is %d\n", len(SEARCHS))
+}
+
+func binaritree() {
+	fmt.Printf("BINARI SEARCH\n")
+	fmt.Printf("    start: insert.\n")
+	start := time.Now()
+	var tree *node
+	tree = new(node)
+	for _, i := range RAMDOMS {
+		tree.insert(KEY(i))
+	}
+	end := time.Now()
+	sub := end.Sub(start)
+	fmt.Printf("    end  : insert time: %v.\n", sub)
+
+	result := []int{}
+	fmt.Printf("    start: search.\n")
+	start = time.Now()
+	for _, i := range SEARCHS {
+		res := tree.search(KEY(i))
+		if res != nil {
+			result = append(result, int(res.data))
+		}
+	}
+	end = time.Now()
+	sub = end.Sub(start)
+	fmt.Printf("    end  : search result num: %d, time: %v.\n", len(result), sub)
+}
+
+func golist() {
+	fmt.Printf("GOLIST\n")
+	fmt.Printf("    start: insert.\n")
+	start := time.Now()
+	var list [MAX]int
+	for k, i := range RAMDOMS {
+		list[k] = i
+	}
+	end := time.Now()
+	sub := end.Sub(start)
+	fmt.Printf("    end  : insert time: %v.\n", sub)
+
+	result := []int{}
+	fmt.Printf("    start: insert.\n")
+	start = time.Now()
+	for _, i := range SEARCHS {
+		for _, v := range list {
+			if i == v {
+				result = append(result, i)
+				break
+			}
+		}
+	}
+	end = time.Now()
+	sub = end.Sub(start)
+	fmt.Printf("    end  : search result num: %d, time: %v.\n", len(result), sub)
+}
+
 func main() {
 
-	var root *node
-	root = new(node)
-	root.insert(12)
-	root.insert(4)
-	root.insert(8)
-	root.insert(2)
-	root.insert(6)
-
-	fmt.Println("main")
-	traverse(root)
-	res := root.search(2)
-	fmt.Println(res)
+	pre()
+	binaritree()
+	golist()
 }
