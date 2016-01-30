@@ -13,7 +13,7 @@ const (
 	INFTY = 1 << 21
 )
 
-var v, n, tt int
+var n int
 var M [N][N]int
 var d [N]int
 
@@ -24,10 +24,10 @@ func bfs(s int) {
 		d[i] = INFTY
 	}
 	d[s] = 0
-	for q.IsEmpty() {
+	for !q.IsEmpty() {
 		u, _ := q.Dequeue()
 		iu := u.(int)
-		for v = 0; v < n; v++ {
+		for v := 0; v < n; v++ {
 			if M[iu][v] == 0 {
 				continue
 			}
