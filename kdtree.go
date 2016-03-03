@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"sort"
 )
 
@@ -34,7 +35,7 @@ func (p Ps) Swap(i, j int) {
 }
 
 func (p *Point) disp() {
-	fmt.Printf("%d\n", p.id)
+	fmt.Printf("id - %d\n", p.id)
 }
 
 type ByX struct {
@@ -94,8 +95,13 @@ func find(v int, sx int, tx int, sy int, ty int, depth int, ans Ps) {
 	x := P[T[v].location].x
 	y := P[T[v].location].y
 
+	//fmt.Printf("sx <= x : %d %d,  x <= tx : %d %d,sy <= y : %d %d,  y <= ty : %d  %d\n", sx, x, x, tx, sy, y, y, ty)
 	if sx <= x && x <= tx && sy <= y && y <= ty {
+		//fmt.Printf("%d %d %d %d %d %d\n", x, sx, tx, y, sy, ty)
+		log.Println("append ", P[T[v].location])
 		ans = append(ans, P[T[v].location])
+		log.Println("len ", len(ans), " cap ", cap(ans))
+		log.Println("appended ", ans)
 	}
 
 	if depth%2 == 0 {
@@ -112,12 +118,12 @@ func find(v int, sx int, tx int, sy int, ty int, depth int, ans Ps) {
 	} else {
 		if T[v].l != NIL {
 			if sy <= y {
-				find(T[v].l, sx, ty, sy, ty, depth+1, ans)
+				find(T[v].l, sx, tx, sy, ty, depth+1, ans)
 			}
 		}
 		if T[v].r != NIL {
 			if y <= ty {
-				find(T[v].r, sx, ty, sy, ty, depth+1, ans)
+				find(T[v].r, sx, tx, sy, ty, depth+1, ans)
 			}
 		}
 	}
@@ -135,22 +141,28 @@ func main() {
 		T[i].r = NIL
 		T[i].p = NIL
 	}
-	fmt.Println(T)
+	log.Println(T)
 	np = 0
 	root := makeKDTree(0, N, 0)
 
-	fmt.Println(P)
-	fmt.Println(T)
+	log.Println(P)
+	log.Println(T)
 	var q int
 	fmt.Scanf("%d", &q)
 	var sx, tx, sy, ty int
 	for i := 0; i < q; i++ {
 		fmt.Scanf("%d %d %d %d", &sx, &tx, &sy, &ty)
-		ans := make(Ps, q)
+		ans := make(Ps, 0, N)
+		log.Println(ans)
 		find(root, sx, tx, sy, ty, 0, ans)
+		log.Println("ans ", ans[:cap(ans)])
+		log.Println(len(ans), "  ", cap(ans))
 		sort.Sort(ById{ans[:]})
-		for j := 0; j < len(ans); j++ {
-			ans[j].disp()
+		log.Println("sorted ans ", ans[:cap(ans)])
+		for j := 0; j < cap(ans); j++ {
+			log.Println(ans[j : j+1])
+			an := ans[j : j+1]
+			an[0].disp()
 		}
 	}
 }
