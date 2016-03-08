@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/iyoo14/goalgo/lib"
 	"log"
 	"sort"
 )
@@ -91,16 +92,12 @@ func makeKDTree(l int, r int, depth int) int {
 	return t
 }
 
-func find(v int, sx int, tx int, sy int, ty int, depth int, ans Ps) {
+func find(v int, sx int, tx int, sy int, ty int, depth int, ans *lib.Vector) {
 	x := P[T[v].location].x
 	y := P[T[v].location].y
 
-	//fmt.Printf("sx <= x : %d %d,  x <= tx : %d %d,sy <= y : %d %d,  y <= ty : %d  %d\n", sx, x, x, tx, sy, y, y, ty)
 	if sx <= x && x <= tx && sy <= y && y <= ty {
-		//fmt.Printf("%d %d %d %d %d %d\n", x, sx, tx, y, sy, ty)
-		log.Println("append ", P[T[v].location])
-		ans = append(ans, P[T[v].location])
-		log.Println("len ", len(ans), " cap ", cap(ans))
+		ans.PushBack(P[T[v].location])
 		log.Println("appended ", ans)
 	}
 
@@ -141,7 +138,6 @@ func main() {
 		T[i].r = NIL
 		T[i].p = NIL
 	}
-	log.Println(T)
 	np = 0
 	root := makeKDTree(0, N, 0)
 
@@ -152,17 +148,13 @@ func main() {
 	var sx, tx, sy, ty int
 	for i := 0; i < q; i++ {
 		fmt.Scanf("%d %d %d %d", &sx, &tx, &sy, &ty)
-		ans := make(Ps, 0, N)
+		ans := lib.NewVector(N)
 		log.Println(ans)
 		find(root, sx, tx, sy, ty, 0, ans)
-		log.Println("ans ", ans[:cap(ans)])
-		log.Println(len(ans), "  ", cap(ans))
-		sort.Sort(ById{ans[:]})
-		log.Println("sorted ans ", ans[:cap(ans)])
-		for j := 0; j < cap(ans); j++ {
-			log.Println(ans[j : j+1])
-			an := ans[j : j+1]
-			an[0].disp()
+		for j := 0; j < ans.Size(); j++ {
+			an := ans.V[j]
+			ap := an.(Point)
+			ap.disp()
 		}
 	}
 }
